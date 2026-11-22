@@ -179,7 +179,9 @@
           setStatus("Conecte sua conta do Discord e volte para esta página.");
         }
       } catch (erro) {
-        setStatus("Não foi possível verificar agora (" + erro.message + ").");
+        // Detalhe técnico fica no console (F12) para depuração.
+        console.error("Falha ao verificar o cargo:", erro);
+        setStatus("Verificação indisponível no momento. Tente novamente mais tarde.");
       } finally {
         verificando = false;
       }
