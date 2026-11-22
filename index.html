@@ -6,32 +6,19 @@
   <title>KAL LIFE</title>
   <style>
     :root { color-scheme: dark; }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     html, body { height: 100%; }
-
     body {
       background: #000000;
       color: #ffffff;
       font-family: Roboto, "Segoe UI", Arial, sans-serif;
       overflow: hidden;
     }
-
-    .tela {
-      position: fixed;
-      inset: 0;
-      display: none;
-    }
-
+    .tela { position: fixed; inset: 0; display: none; }
     .tela.ativa { display: flex; }
 
     /* Tela 1: porta de entrada (Discord) */
-    #gate {
-      align-items: center;
-      justify-content: center;
-    }
-
+    #gate { align-items: center; justify-content: center; }
     #btn-discord {
       position: absolute;
       top: 24px;
@@ -47,20 +34,16 @@
       font-weight: 700;
       cursor: pointer;
     }
-
     #gate-status {
       padding: 22px;
       text-align: center;
       color: #cccccc;
       font-size: 14px;
+      max-width: 420px;
     }
 
     /* Tela 2: LOGIN (mesmo visual do app) */
-    #login {
-      align-items: center;
-      justify-content: center;
-    }
-
+    #login { align-items: center; justify-content: center; }
     .form {
       width: 330px;
       max-width: calc(100vw - 32px);
@@ -68,14 +51,12 @@
       flex-direction: column;
       gap: 8px;
     }
-
     .form h1 {
       font-size: 18px;
       font-weight: 700;
       text-align: center;
       margin-bottom: 12px;
     }
-
     .campo {
       width: 100%;
       height: 44px;
@@ -88,9 +69,7 @@
       font-size: 16px;
       outline: none;
     }
-
     .campo::placeholder { color: rgba(255, 255, 255, 0.53); }
-
     .btn {
       width: 100%;
       height: 44px;
@@ -99,7 +78,6 @@
       font-size: 15px;
       cursor: pointer;
     }
-
     .btn-primario {
       margin-top: 14px;
       background: #ffffff;
@@ -107,7 +85,6 @@
       border: 0;
       font-weight: 700;
     }
-
     .btn-secundario {
       margin-top: 7px;
       background: rgba(0, 0, 0, 0.4);
@@ -136,16 +113,25 @@
   </section>
 
   <script>
-    const SITE_URL = "https://discord-kallide2.vercel.app/";
-    const ROLE_ID = "1570611328937103390";
-    // Endpoint do site que responde {"hasRole": true|false}. Ajuste para o seu backend.
-    const STATUS_URL = "https://discord-kallide2.vercel.app/api/status";
-
     const gate = document.getElementById("gate");
     const login = document.getElementById("login");
     const statusEl = document.getElementById("gate-status");
     const botao = document.getElementById("btn-discord");
-    let verificando = false;
+
+    // Código que liga este navegador ao app. Vem da URL (?code=...) quando o
+    // app abre o site; se não vier, cria um novo e coloca na URL.
+    function codigoAleatorio() {
+      const bytes = new Uint8Array(24);
+      crypto.getRandomValues(bytes);
+      return Array.from(bytes, b => b.toString(16).padStart(2, "0")).join("");
+    }
+
+    const params = new URLSearchParams(location.search);
+    let code = params.get("code");
+    if (!/^[A-Za-z0-9_-]{16,64}$/.test(code || "")) {
+      code = codigoAleatorio();
+      history.replaceState(null, "", "/?code=" + code);
+    }
 
     function mostrarLogin() {
       gate.classList.remove("ativa");
@@ -157,17 +143,13 @@
     }
 
     botao.addEventListener("click", function () {
-      window.open(SITE_URL, "_blank", "noopener");
+      window.location.href = "/api/discord/login?code=" + encodeURIComponent(code);
     });
 
     async function verificarCargo() {
-      if (verificando || login.classList.contains("ativa")) return;
-      verificando = true;
       setStatus("Verificando sua conta do Discord...");
-
       try {
-        const resposta = await fetch(STATUS_URL + "?role=" + ROLE_ID, {
-          credentials: "include",
+        const resposta = await fetch("/api/status?code=" + encodeURIComponent(code), {
           cache: "no-store"
         });
         if (!resposta.ok) throw new Error("HTTP " + resposta.status);
@@ -175,23 +157,20 @@
         const dados = await resposta.json();
         if (dados.hasRole === true) {
           mostrarLogin();
+        } else if (dados.done === true) {
+          setStatus("Sua conta não tem o cargo necessário na comunidade.");
+        } else if (params.get("erro") === "1") {
+          setStatus("Não foi possível conectar o Discord. Tente de novo.");
         } else {
-          setStatus("Conecte sua conta do Discord e volte para esta página.");
+          setStatus("Conecte sua conta do Discord e volte para o app.");
         }
       } catch (erro) {
         // Detalhe técnico fica no console (F12) para depuração.
         console.error("Falha ao verificar o cargo:", erro);
         setStatus("Verificação indisponível no momento. Tente novamente mais tarde.");
-      } finally {
-        verificando = false;
       }
     }
 
-    // Verifica ao abrir e ao voltar para a página (depois de conectar no site).
-    window.addEventListener("focus", verificarCargo);
-    document.addEventListener("visibilitychange", function () {
-      if (!document.hidden) verificarCargo();
-    });
     verificarCargo();
   </script>
 
