@@ -3,77 +3,194 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Connect with Discord</title>
+  <title>KAL LIFE</title>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    :root { color-scheme: dark; }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body { height: 100%; }
 
     body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      background-color: #1e1f22;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    .discord-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      background-color: #5865F2;
+      background: #000000;
       color: #ffffff;
-      font-size: 16px;
-      font-weight: 600;
-      text-decoration: none;
-      padding: 14px 24px;
-      border: none;
-      border-radius: 8px;
+      font-family: Roboto, "Segoe UI", Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    .tela {
+      position: fixed;
+      inset: 0;
+      display: none;
+    }
+
+    .tela.ativa { display: flex; }
+
+    /* Tela 1: porta de entrada (Discord) */
+    #gate {
+      align-items: center;
+      justify-content: center;
+    }
+
+    #btn-discord {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      height: 44px;
+      padding: 0 20px;
+      border: 0;
+      border-radius: 7px;
+      background: #ffffff;
+      color: #000000;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 700;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(88, 101, 242, 0.35);
-      transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
     }
 
-    .discord-btn:hover {
-      background-color: #4752C4;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(88, 101, 242, 0.5);
+    #gate-status {
+      padding: 22px;
+      text-align: center;
+      color: #cccccc;
+      font-size: 14px;
     }
 
-    .discord-btn:active {
-      transform: translateY(0);
+    /* Tela 2: LOGIN (mesmo visual do app) */
+    #login {
+      align-items: center;
+      justify-content: center;
     }
 
-    .discord-btn.loading {
-      pointer-events: none;
-      opacity: 0.7;
+    .form {
+      width: 330px;
+      max-width: calc(100vw - 32px);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
 
-    .discord-icon {
-      width: 24px;
-      height: 24px;
-      fill: currentColor;
+    .form h1 {
+      font-size: 18px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .campo {
+      width: 100%;
+      height: 44px;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.4);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.27);
+      border-radius: 7px;
+      font-family: inherit;
+      font-size: 16px;
+      outline: none;
+    }
+
+    .campo::placeholder { color: rgba(255, 255, 255, 0.53); }
+
+    .btn {
+      width: 100%;
+      height: 44px;
+      border-radius: 7px;
+      font-family: inherit;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .btn-primario {
+      margin-top: 14px;
+      background: #ffffff;
+      color: #000000;
+      border: 0;
+      font-weight: 700;
+    }
+
+    .btn-secundario {
+      margin-top: 7px;
+      background: rgba(0, 0, 0, 0.4);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.27);
     }
   </style>
 </head>
 <body>
 
-  <a href="https://discord.com/oauth2/authorize?client_id=1570593759694037152&amp;permissions=8&amp;integration_type=0&amp;scope=bot" id="discord-btn" class="discord-btn" target="_blank" rel="noopener">
-    <svg class="discord-icon" viewBox="0 0 127.14 96.36" xmlns="http://www.w3.org/2000/svg">
-      <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,46,96.12,53,91.08,65.69,84.69,65.69Z"/>
-    </svg>
-    <span>Connect with Discord</span>
-  </a>
+  <!-- Tela 1: conectar com o Discord -->
+  <section id="gate" class="tela ativa">
+    <button id="btn-discord" type="button">Connect with Discord</button>
+    <p id="gate-status"></p>
+  </section>
+
+  <!-- Tela 2: LOGIN (aparece só com o cargo) -->
+  <section id="login" class="tela">
+    <div class="form">
+      <h1>LOGIN</h1>
+      <input class="campo" type="email" placeholder="E-mail" autocomplete="username">
+      <input class="campo" type="password" placeholder="Senha" autocomplete="current-password">
+      <button class="btn btn-primario" type="button">CONECTAR</button>
+      <button class="btn btn-secundario" type="button">CRIAR CONTA</button>
+    </div>
+  </section>
 
   <script>
-    var botao = document.getElementById("discord-btn");
+    const SITE_URL = "https://discord-kallide2.vercel.app/";
+    const ROLE_ID = "1570611328937103390";
+    // Endpoint do site que responde {"hasRole": true|false}. Ajuste para o seu backend.
+    const STATUS_URL = "https://discord-kallide2.vercel.app/api/status";
+
+    const gate = document.getElementById("gate");
+    const login = document.getElementById("login");
+    const statusEl = document.getElementById("gate-status");
+    const botao = document.getElementById("btn-discord");
+    let verificando = false;
+
+    function mostrarLogin() {
+      gate.classList.remove("ativa");
+      login.classList.add("ativa");
+    }
+
+    function setStatus(texto) {
+      statusEl.textContent = texto;
+    }
+
     botao.addEventListener("click", function () {
-      botao.classList.add("loading");
-      botao.querySelector("span").textContent = "Abrindo o Discord...";
+      window.open(SITE_URL, "_blank", "noopener");
     });
+
+    async function verificarCargo() {
+      if (verificando || login.classList.contains("ativa")) return;
+      verificando = true;
+      setStatus("Verificando sua conta do Discord...");
+
+      try {
+        const resposta = await fetch(STATUS_URL + "?role=" + ROLE_ID, {
+          credentials: "include",
+          cache: "no-store"
+        });
+        if (!resposta.ok) throw new Error("HTTP " + resposta.status);
+
+        const dados = await resposta.json();
+        if (dados.hasRole === true) {
+          mostrarLogin();
+        } else {
+          setStatus("Conecte sua conta do Discord e volte para esta página.");
+        }
+      } catch (erro) {
+        setStatus("Não foi possível verificar agora (" + erro.message + ").");
+      } finally {
+        verificando = false;
+      }
+    }
+
+    // Verifica ao abrir e ao voltar para a página (depois de conectar no site).
+    window.addEventListener("focus", verificarCargo);
+    document.addEventListener("visibilitychange", function () {
+      if (!document.hidden) verificarCargo();
+    });
+    verificarCargo();
   </script>
 
 </body>
